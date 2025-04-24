@@ -1,0 +1,23 @@
+alias adddotfilestobash='cat <<'\''EOF'\'' >>~/.bashrc
+# add dotfiles
+source ~/dotfiles/.aliases
+EOF'
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+alias cpdotfiles='cp "/mnt/d/ownCloud/dotfiles/aliases" $HOME/dotfiles/.aliases'
+alias cpssh='cp "/mnt/d/ownCloud/dotfiles/ssh_config" $HOME/.ssh/ssh_config &&\
+mv $HOME/.ssh/ssh_config $HOME/.ssh/config'
+alias devdir='cd /mnt/d/scripts/'
+alias dotdir='cd /mnt/d/ownCloud/dotfiles'
+alias egrep='egrep --color=auto'
+alias explorer='explorer.exe .'
+alias fgrep='fgrep --color=auto'
+alias grep='grep --color=auto'
+alias home='cd ~'
+alias jp='jupyter notebook --port 5668 --no-browser'
+alias jpl='jupyter lab --port 5669 --no-browser'
+alias l='ls -CF'
+alias la='ls -la'
+alias ll='ls -l'
+alias ls='ls --color=auto'
+alias ownclouddir='cd /mnt/d/ownCloud/'
+alias wnv='watch -n0.3 nvidia-smi'
