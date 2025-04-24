@@ -1,0 +1,46 @@
+Host gitlab.example.org
+    User git
+    Hostname gitlab.example.org
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_rsa
+
+Host github.com
+    User git
+    Hostname github.com
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_ed25519
+
+Host ai121
+    HostName 203.0.113.121
+    User redacted-user
+    PreferredAuthentications password
+
+Host ai122
+    HostName 203.0.113.122
+    User redacted-user
+    PreferredAuthentications password
+
+Host ai123
+    HostName 203.0.113.123
+    User redacted-user
+    PreferredAuthentications password
+
+Host ai124
+    HostName 203.0.113.124
+    User redacted-user
+    PreferredAuthentications password
+
+Host ai125
+    HostName 203.0.113.125
+    User redacted-user
+    PreferredAuthentications password
+
+Host a100_tuc
+    HostName cloud-243.rz.example.org
+    User redacted-user
+    PreferredAuthentications password
+
+Host h100_tuc
+    HostName cloud-247.rz.example.org
+    User redacted-user
+    PreferredAuthentications password
