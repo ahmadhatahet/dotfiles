@@ -1,3 +1,5 @@
+#!/bin/bash
+
 mkdir -p ~/.ssh
 mv ~/dotfiles/ssh_config ~/.ssh/config
 
@@ -7,5 +9,7 @@ source ~/dotfiles/aliases
 EOF
 
 source ~/.bashrc
+
+wget -qO- https://astral.sh/uv/install.sh | sh
 
 echo '--Done--'
