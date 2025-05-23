@@ -2,13 +2,13 @@ Host gitlab.example.org
     User git
     Hostname gitlab.example.org
     PreferredAuthentications publickey
-    IdentityFile ~/.ssh/id_rsa
+    IdentityFile ~/.ssh/tuc_gitlab
 
 Host github.com
     User git
     Hostname github.com
     PreferredAuthentications publickey
-    IdentityFile ~/.ssh/id_ed25519
+    IdentityFile ~/.ssh/gh
 
 Host ai121
     HostName 203.0.113.121
