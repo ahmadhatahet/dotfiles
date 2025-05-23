@@ -2,13 +2,13 @@ Host gitlab.tu-clausthal.de
     User git
     Hostname gitlab.tu-clausthal.de
     PreferredAuthentications publickey
-    IdentityFile ~/.ssh/id_rsa
+    IdentityFile ~/.ssh/tuc_gitlab
 
 Host github.com
     User git
     Hostname github.com
     PreferredAuthentications publickey
-    IdentityFile ~/.ssh/id_ed25519
+    IdentityFile ~/.ssh/gh
 
 Host ai121
     HostName 139.174.67.121
