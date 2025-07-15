@@ -1,7 +1,7 @@
 #!/bin/bash
 
 mkdir -p ~/.ssh
-mv ~/dotfiles/ssh_config ~/.ssh/config
+mv ./ssh_config ~/.ssh/config
 
 cat <<'EOF' >>~/.bashrc
 # add dotfiles
