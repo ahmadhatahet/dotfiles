@@ -21,4 +21,9 @@ sudo bash install.sh
 cd ~
 curl https://raw.githubusercontent.com/seebi/dircolors-solarized/master/dircolors.ansi-dark --output ~/.dircolors
 
+cp ~/dotfiles/my_them.zsh-theme ~/.oh-my-zsh/custom/themes/my_them.zsh-theme
+sed -i '' 's/ZSH_THEME="[^"]*"/ZSH_THEME="my_theme"/' ~/.zshrc
+
+
+
 source ~/.zshrc
