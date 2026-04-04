@@ -1,28 +1,33 @@
-# init.ps1 - Run as Administrator
+# init.ps1
 Write-Host "--- Starting Windows Setup ---" -ForegroundColor Cyan
 
-# 1. Install Scoop (The 'Brew' for Windows) to manage uv and git
+# 1. Install Scoop
 if (!(Get-Command scoop -ErrorAction SilentlyContinue)) {
     Write-Host "Installing Scoop..."
-    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-    Invoke-RestMethod -Get https://get.scoop.sh | iex
+    # We skip Set-ExecutionPolicy here because you are already running with -ExecutionPolicy Bypass
+    # This avoids the "PermissionDenied" override error you saw
+    $installScript = Invoke-RestMethod -Uri https://get.scoop.sh
+    Invoke-Expression $installScript
+
+    # Add Scoop to the current session's PATH immediately
+    $env:PATH += ";$env:USERPROFILE\scoop\shims"
 }
 
 # 2. Install Core Tools
 Write-Host "Installing git and uv..."
-scoop install git uv
-
-# 3. Setup PowerShell Profile (Aliases)
-$ProfilePath = $PROFILE
-if (!(Test-Path $ProfilePath)) {
-    New-Item -Path $ProfilePath -ItemType File -Force
+# Check again to ensure Scoop is now recognized
+if (Get-Command scoop -ErrorAction SilentlyContinue) {
+    scoop install git uv
+} else {
+    Write-Error "Scoop installation failed or is not in PATH. Please restart PowerShell and run again."
 }
 
-# init.ps1
-Write-Host "--- Syncing Windows Aliases with Linux Dotfiles ---" -ForegroundColor Cyan
-
+# 3. Setup PowerShell Profile (Aliases)
+Write-Host "--- Syncing Windows Aliases ---" -ForegroundColor Cyan
 $ProfilePath = $PROFILE
-if (!(Test-Path $ProfilePath)) { New-Item -Path $ProfilePath -ItemType File -Force }
+if (!(Test-Path $ProfilePath)) {
+    $null = New-Item -Path $ProfilePath -ItemType File -Force
+}
 
 $CustomFunctions = @"
 # --- Core Navigation ---
@@ -52,6 +57,4 @@ function explorer { explorer.exe . }
 "@
 
 Set-Content -Path $ProfilePath -Value $CustomFunctions
-Write-Host "Aliases successfully synchronized to `$PROFILE." -ForegroundColor Green
-
 Write-Host "--- Windows Setup Complete! Restart PowerShell ---" -ForegroundColor Green
