@@ -14,34 +14,46 @@ fi
 apt-get update
 apt-get install -y zsh curl wget git build-essential nvidia-cuda-toolkit cmake
 
-# Step 2: User Context Setup
+# Step 2: User Context & Directory Setup
 USER_NAME=${SUDO_USER:-$(logname)}
 USER_HOME=$(getent passwd "$USER_NAME" | cut -d: -f6)
+DOTFILES_DIR="$USER_HOME/dotfiles"
 
-# Oh-My-Zsh
+echo "Creating dotfiles directory at $DOTFILES_DIR..."
+mkdir -p "$DOTFILES_DIR"
+# Copy all files from the current directory to ~/dotfiles
+cp -r ./* "$DOTFILES_DIR/"
+chown -R "$USER_NAME:$USER_NAME" "$DOTFILES_DIR"
+
+# Step 3: Shell Configuration (Permanent ZSH)
+echo "Setting ZSH as default shell..."
+chsh -s $(which zsh) "$USER_NAME"
+
+# Oh-My-Zsh Installation
 sudo -u "$USER_NAME" bash <<EOF
-    [ ! -d "\$HOME/.oh-my-zsh" ] && sh -c "\$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    if [ ! -d "\$HOME/.oh-my-zsh" ]; then
+        sh -c "\$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    fi
 EOF
 
-# Theme & Aliases
-cp -f ./my_them.zsh-theme "$USER_HOME/.oh-my-zsh/custom/themes/"
+# Apply Theme & Aliases to .zshrc
+cp -f "$DOTFILES_DIR/my_them.zsh-theme" "$USER_HOME/.oh-my-zsh/custom/themes/"
 chown "$USER_NAME:$USER_NAME" "$USER_HOME/.oh-my-zsh/custom/themes/my_them.zsh-theme"
-sed -i 's/ZSH_THEME="[^"]*"/ZSH_THEME="my_them"/' "$USER_HOME/.zshrc"
 
-if ! grep -q "source ~/dotfiles/aliases" "$USER_HOME/.zshrc"; then
-    echo "source ~/dotfiles/aliases" >> "$USER_HOME/.zshrc"
-    chown "$USER_NAME:$USER_NAME" "$USER_HOME/.zshrc"
+# Ensure .zshrc points to the new persistent location
+sed -i 's/ZSH_THEME="[^"]*"/ZSH_THEME="my_them"/' "$USER_HOME/.zshrc"
+if ! grep -q "source $DOTFILES_DIR/aliases" "$USER_HOME/.zshrc"; then
+    echo "source $DOTFILES_DIR/aliases" >> "$USER_HOME/.zshrc"
 fi
 
-# Step 3: The Toolchain (The Fix)
+# Step 4: Toolchain & Homebrew Pathing
 sudo -u "$USER_NAME" bash <<EOF
     # 1. Install uv
     curl -LsSf https://astral.sh/uv/install.sh | sh
 
-    # 2. Install Rust & Source immediately for this subshell
+    # 2. Install Rust
     if ! command -v rustup &>/dev/null; then
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-        . "\$HOME/.cargo/env"
     fi
 
     # 3. Install Homebrew
@@ -49,15 +61,26 @@ sudo -u "$USER_NAME" bash <<EOF
         /bin/bash -c "\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     fi
 
-    # 4. Use Absolute Path for Brew to install llama.cpp
-    # This bypasses the 'command not found' error
-    /home/linuxbrew/.linuxbrew/bin/brew install llama.cpp
+    # 4. Permanent Brew Activation (Bash & Zsh)
+    echo >> "\$HOME/.bashrc"
+    echo 'eval "\$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> "\$HOME/.bashrc"
+    
+    # Also add to .zshrc so it works in your new default shell
+    if ! grep -q "brew shellenv" "\$HOME/.zshrc"; then
+        echo 'eval "\$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> "\$HOME/.zshrc"
+    fi
+
+    # Activate for the current subshell to finish llama.cpp
+    eval "\$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    
+    # 5. Install llama.cpp
+    brew install llama.cpp
 EOF
 
 echo "--------------------------------------------------"
-echo "Setup finalized successfully!"
-echo "Switching you to your new ZSH environment now..."
+echo "Setup complete! Your files are now in $DOTFILES_DIR"
+echo "ZSH is now your permanent default shell."
 echo "--------------------------------------------------"
 
-# Automatically drop the user into their new shell
+# Transition to the user's new environment
 exec sudo -u "$USER_NAME" -i zsh
