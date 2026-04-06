@@ -75,6 +75,7 @@ sudo -u "$USER_NAME" bash <<EOF
     
     # 5. Install llama.cpp
     brew install llama.cpp
+    apt install -y libssl-dev nvtop
 EOF
 
 echo "--------------------------------------------------"
