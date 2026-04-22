@@ -1,64 +1,70 @@
-sudo bash << 'EOF'
-# Step 1: Repositories & Build Tools
-echo "Updating repositories and installing build tools..."
-sed -i 's/main$/main contrib non-free non-free-firmware/g' /etc/apt/sources.list
-if [ -f /etc/apt/sources.list.d/debian.sources ]; then
-    sed -i 's/Components: main/Components: main contrib non-free non-free-firmware/g' /etc/apt/sources.list.d/debian.sources
-fi
-apt-get update
-apt-get install -y zsh curl wget git build-essential nvidia-cuda-toolkit cmake libssl-dev nvtop
+& {
+    Write-Host "--- Starting Windows Setup ---" -ForegroundColor Cyan
 
-# Step 2: User Context & Directory Setup
-USER_NAME=${SUDO_USER:-$(logname)}
-USER_HOME=$(getent passwd "$USER_NAME" | cut -d: -f6)
-DOTFILES_DIR="$USER_HOME/dotfiles"
+    # 1. Install Scoop
+    if (!(Get-Command scoop -ErrorAction SilentlyContinue)) {
+        Write-Host "Installing Scoop..."
+        $installScript = Invoke-RestMethod -Uri https://get.scoop.sh
+        Invoke-Expression $installScript
+        $env:PATH += ";$env:USERPROFILE\scoop\shims"
+    }
 
-echo "Creating dotfiles directory at $DOTFILES_DIR..."
-mkdir -p "$DOTFILES_DIR"
-cp -r ./* "$DOTFILES_DIR/"
-chown -R "$USER_NAME:$USER_NAME" "$DOTFILES_DIR"
+    # 2. Install Core Tools
+    Write-Host "Installing git and uv..."
+    if (Get-Command scoop -ErrorAction SilentlyContinue) {
+        scoop install git uv
+    } else {
+        Write-Error "Scoop installation failed or is not in PATH."
+    }
 
-# Step 3: Shell Configuration
-echo "Setting ZSH as default shell..."
-chsh -s $(which zsh) "$USER_NAME"
+    # 3. Install MesloLGS NF Regular Font
+    Write-Host "Installing MesloLGS NF Font..." -ForegroundColor Cyan
+    $fontUrl = "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf"
+    $fontName = "MesloLGS NF Regular.ttf"
+    $fontDestination = Join-Path $env:TEMP $fontName
 
-# Oh-My-Zsh Installation (Non-interactive)
-sudo -u "$USER_NAME" bash <<SUBEOF
-    if [ ! -d "\$HOME/.oh-my-zsh" ]; then
-        sh -c "\$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-    fi
-SUBEOF
+    Invoke-WebRequest -Uri $fontUrl -OutFile $fontDestination
 
-# Apply Theme & Aliases
-if [ -f "$DOTFILES_DIR/my_them.zsh-theme" ]; then
-    cp -f "$DOTFILES_DIR/my_them.zsh-theme" "$USER_HOME/.oh-my-zsh/custom/themes/"
-    chown "$USER_NAME:$USER_NAME" "$USER_HOME/.oh-my-zsh/custom/themes/my_them.zsh-theme"
-    sed -i 's/ZSH_THEME="[^"]*"/ZSH_THEME="my_them"/' "$USER_HOME/.zshrc"
-fi
+    $shellApp = New-Object -ComObject Shell.Application
+    $fontsFolder = $shellApp.Namespace(0x14)
+    $fontsFolder.CopyHere($fontDestination, 16)
 
-if [ -f "$DOTFILES_DIR/aliases" ] && ! grep -q "source $DOTFILES_DIR/aliases" "$USER_HOME/.zshrc"; then
-    echo "source $DOTFILES_DIR/aliases" >> "$USER_HOME/.zshrc"
-fi
+    Write-Host "Font installed successfully." -ForegroundColor Gray
 
-# Step 4: Toolchain & Homebrew
-sudo -u "$USER_NAME" bash <<SUBEOF
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-    if ! command -v rustup &>/dev/null; then
-        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    fi
-    if [ ! -d "/home/linuxbrew/.linuxbrew" ]; then
-        /bin/bash -c "\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    fi
+    # 4. Setup PowerShell Profile (Aliases)
+    Write-Host "--- Syncing Windows Aliases ---" -ForegroundColor Cyan
+    $ProfilePath = $PROFILE
+    if (!(Test-Path $ProfilePath)) {
+        $null = New-Item -Path $ProfilePath -ItemType File -Force
+    }
 
-    # Permanent Brew Activation
-    BREW_LINE='eval "\$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
-    grep -qF "\$BREW_LINE" "\$HOME/.bashrc" || echo "\$BREW_LINE" >> "\$HOME/.bashrc"
-    grep -qF "\$BREW_LINE" "\$HOME/.zshrc" || echo "\$BREW_LINE" >> "\$HOME/.zshrc"
+    $CustomFunctions = @"
+# --- Core Navigation ---
+function home { Set-Location `$HOME }
+function devdir { Set-Location 'D:\scripts\' }
+function l { Get-ChildItem @args }
+function ll { Get-ChildItem @args | Select-Object Mode, LastWriteTime, Length, Name }
+function la { Get-ChildItem -Force @args }
 
-    eval "\$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-    brew install llama.cpp
-SUBEOF
+# --- Git Pro Shortcuts ---
+function g { git @args }
+function gs { git status -sb @args }
+function ga { git add @args }
+function gaa { git add --all @args }
+function gc { git commit -m `$args }
+function gp { git push @args }
+function gpl { git pull @args }
+function gup { git pull --rebase @args }
+function gl { git log --oneline --graph --decorate @args }
+function gd { git diff @args }
+function gco { git checkout @args }
+function gcb { git checkout -b @args }
 
-echo "Setup complete! Transitioning to ZSH..."
-exec sudo -u "$USER_NAME" -i zsh
-EOF
+# --- Tools ---
+function wnv { while(`$true) { clear; nvidia-smi; Start-Sleep -Milliseconds 300 } }
+function explorer { explorer.exe . }
+"@
+
+    Set-Content -Path $ProfilePath -Value $CustomFunctions
+    Write-Host "--- Windows Setup Complete! Restart PowerShell ---" -ForegroundColor Green
+}
