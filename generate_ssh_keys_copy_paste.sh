@@ -20,11 +20,52 @@ echo -e "\nUpdating SSH configuration file at $CONFIG_FILE..."
 
 cat << CONFIG > "$CONFIG_FILE"
 # --- GitLab (TU Clausthal) ---
+Host github.com
+    User git
+    Hostname github.com
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/gh
+
 Host gitlab.tu-clausthal.de
     HostName gitlab.tu-clausthal.de
     User ah19
     IdentityFile ~/.ssh/tuc_gitlab
     IdentitiesOnly yes
+
+Host ai121
+    HostName 139.174.67.121
+    User ah19
+    PreferredAuthentications password
+
+Host ai122
+    HostName 139.174.67.122
+    User ah19
+    PreferredAuthentications password
+
+Host ai123
+    HostName 139.174.67.123
+    User ah19
+    PreferredAuthentications password
+
+Host ai124
+    HostName 139.174.67.124
+    User ah19
+    PreferredAuthentications password
+
+Host ai125
+    HostName 139.174.67.125
+    User ah19
+    PreferredAuthentications password
+
+Host a100_tuc
+    HostName cloud-243.rz.tu-clausthal.de
+    User ah19
+    PreferredAuthentications password
+
+Host h100_tuc
+    HostName cloud-247.rz.tu-clausthal.de
+    User ah19
+    PreferredAuthentications password
 
 # --- GitHub ---
 Host github.com
