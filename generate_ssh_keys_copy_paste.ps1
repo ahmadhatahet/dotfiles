@@ -14,17 +14,53 @@ Write-Host "Generating Secure Ed25519 Keys..."
 # 2. Generate SSH Config
 # We use 'User git' because the platform identifies YOU via the key.
 $configContent = @"
+Host github.com
+    User git
+    Hostname github.com
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/gh
+    IdentitiesOnly yes
+
 Host gitlab.tu-clausthal.de
     HostName gitlab.tu-clausthal.de
     User git
     IdentityFile ~/.ssh/tuc_gitlab
     IdentitiesOnly yes
 
-Host github.com
-    HostName github.com
-    User git
-    IdentityFile ~/.ssh/gh
-    IdentitiesOnly yes
+Host ai121
+    HostName 139.174.67.121
+    User ah19
+    PreferredAuthentications password
+
+Host ai122
+    HostName 139.174.67.122
+    User ah19
+    PreferredAuthentications password
+
+Host ai123
+    HostName 139.174.67.123
+    User ah19
+    PreferredAuthentications password
+
+Host ai124
+    HostName 139.174.67.124
+    User ah19
+    PreferredAuthentications password
+
+Host ai125
+    HostName 139.174.67.125
+    User ah19
+    PreferredAuthentications password
+
+Host a100_tuc
+    HostName cloud-243.rz.tu-clausthal.de
+    User ah19
+    PreferredAuthentications password
+
+Host h100_tuc
+    HostName cloud-247.rz.tu-clausthal.de
+    User ah19
+    PreferredAuthentications password
 "@
 
 Set-Content -Path $configFile -Value $configContent
