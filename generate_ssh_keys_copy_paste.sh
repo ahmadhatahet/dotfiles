@@ -25,6 +25,7 @@ Host github.com
     Hostname github.com
     PreferredAuthentications publickey
     IdentityFile ~/.ssh/gh
+    IdentitiesOnly yes
 
 Host gitlab.tu-clausthal.de
     HostName gitlab.tu-clausthal.de
