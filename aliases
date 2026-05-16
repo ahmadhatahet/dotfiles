@@ -1,13 +1,4 @@
 # --- System & Navigation ---
-alias adddotfilestobash='cat <<'\''EOF'\'' >>~/.bashrc
-# add dotfiles
-source ~/dotfiles/.aliases
-EOF'
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-alias cpdotfiles='cp "/mnt/d/scripts/dotfiles/aliases" $HOME/dotfiles/.aliases'
-alias cpssh='cp "/mnt/d/scripts/dotfiles/ssh_config" $HOME/.ssh/ssh_config &&\
-mv $HOME/.ssh/ssh_config $HOME/.ssh/config'
-alias devdir='cd /mnt/d/scripts/'
 alias explorer='explorer.exe .'
 alias home='cd ~'
 alias jp='jupyter notebook --port 5668 --no-browser'
@@ -65,8 +56,3 @@ alias gm='git merge'
 alias gmt='git mergetool'                 # Launch your configured diff tool for conflicts
 alias grba='git rebase --abort'           # Safely exit a messy rebase
 alias grbc='git rebase --continue'        # Move to the next step after resolving rebase conflicts
-
-# --- Development Tools ---
-alias uv='uv'
-alias rust-update='rustup update'
-alias brew-up='brew update && brew upgrade'
