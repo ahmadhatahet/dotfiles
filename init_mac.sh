@@ -10,7 +10,11 @@ brew "git"
 brew "make"
 brew "rustup"
 brew "uv"
-brew "swi-prolog"
+brew "python@3.14"
+brew "nodejs"
+brew "openjdk"
+brew "golang"
+brew "rust"
 brew "xcodegen"
 
 # --- System & Hardware Monitors ---
@@ -28,6 +32,70 @@ brew "docker"
 cask "iterm2"
 cask "drawpen"
 cask "middleclick"
+cask "iina"
+cask "maccy"
+EOF
+
+# 2. Write the Homebrew dependencies directly to your persistent Brewfile
+cat << 'EOF' > ~/dotfiles/aliases
+# --- System & Navigation ---
+alias explorer='explorer.exe .'
+alias home='cd ~'
+alias jp='jupyter notebook --port 5668 --no-browser'
+alias jpl='jupyter lab --port 5669 --no-browser'
+alias l='ls -CF'
+alias la='ls -la'
+alias ll='ls -l'
+alias ls='ls --color=auto'
+alias wnv='watch -n 3 nvidia-smi'
+
+# --- Git Shortcuts (Software Engineering Standard) ---
+alias g='git'
+alias gs='git status'
+alias ga='git add'
+alias gaa='git add --all'
+alias gc='git commit -m'
+alias gca='git commit --amend --no-edit'
+alias gp='git push'
+alias gpl='git pull'
+alias gl='git log --oneline --graph --decorate'
+alias gld="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+alias gd='git diff'
+alias gds='git diff --staged'
+alias gb='git branch'
+alias gco='git checkout'
+alias gcb='git checkout -b'
+alias gm='git merge'
+alias gr='git remote -v'
+alias gst='git stash'
+alias gstp='git stash pop'
+
+# --- Advanced Git Sync & Rebase ---
+alias gup='git pull --rebase'             # Update local branch by reapplying commits on top of upstream
+alias gpu='git push -u origin $(git branch --show-current)' # Push and set upstream for new branches
+alias gf='git fetch --all --prune'        # Fetch all branches and remove references to deleted ones
+alias gcan='git commit --amend --no-edit' # Quickly fix the last commit without changing the message
+
+# --- Navigation & Branching ---
+alias gco='git checkout'
+alias gcb='git checkout -b'
+alias gcm='git checkout main || git checkout master' # Jump to the primary branch
+alias gbd='git branch -d'                 # Delete a merged branch
+alias gbD='git branch -D'                 # Force delete an unmerged branch
+
+# --- Inspection & Cleanup ---
+alias gsh='git show'                      # Inspect the changes in the most recent commit
+alias gst='git status -sb'                # Short, branch-aware status
+alias gcp='git cherry-pick'               # Bring a specific commit from another branch
+alias gclean='git clean -fd'              # Remove untracked files and directories (dangerous but useful)
+alias grh='git reset --hard'              # Wipe local changes (the "nuclear" option)
+alias grs='git reset --soft HEAD~1'       # Undo last commit but keep your changes staged
+
+# --- Conflict Resolution ---
+alias gm='git merge'
+alias gmt='git mergetool'                 # Launch your configured diff tool for conflicts
+alias grba='git rebase --abort'           # Safely exit a messy rebase
+alias grbc='git rebase --continue'        # Move to the next step after resolving rebase conflicts
 EOF
 
 # 3. Create the automated macOS setup script
