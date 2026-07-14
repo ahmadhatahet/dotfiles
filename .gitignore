@@ -1,0 +1,4 @@
+# Local, personal SSH host definitions (usernames, internal hostnames, IPs).
+# Copy ssh_config.local.example to ssh_config.local and fill in your real values.
+# This file must NEVER be committed - this repo is public.
+ssh_config.local

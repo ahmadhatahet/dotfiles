@@ -1,0 +1,18 @@
+# Copy this file to ssh_config.local (same directory) and fill in your real
+# usernames, hostnames and IPs. ssh_config.local is gitignored and will be
+# appended automatically to ~/.ssh/config by the generate_ssh_keys* scripts.
+#
+#   cp ssh_config.local.example ssh_config.local
+#
+# Example entries (replace with your own):
+#
+# Host gitlab.example.org
+#     HostName gitlab.example.org
+#     User your-username
+#     IdentityFile ~/.ssh/gitlab_key
+#     IdentitiesOnly yes
+#
+# Host my-server
+#     HostName 203.0.113.10
+#     User your-username
+#     PreferredAuthentications password
